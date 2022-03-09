@@ -2,8 +2,6 @@
 [![NPM version](https://badge.fury.io/js/swagger-ui.svg)](http://badge.fury.io/js/swagger-editor)
 [![Build Status](https://jenkins.swagger.io/buildStatus/icon?job=oss-swagger-editor-master)](https://jenkins.swagger.io/job/oss-swagger-editor-master/)
 [![Code Climate](https://codeclimate.com/github/swagger-api/swagger-editor/badges/gpa.svg)](https://codeclimate.com/github/swagger-api/swagger-editor)
-[![Dependency Status](https://david-dm.org/swagger-api/swagger-editor/status.svg)](https://david-dm.org/swagger-api/swagger-editor)
-[![devDependency Status](https://david-dm.org/swagger-api/swagger-editor/dev-status.svg)](https://david-dm.org/swagger-api/swagger-editor-#info=devDependencies)
 [![Build Status](https://jenkins.swagger.io/view/OSS%20-%20JavaScript/job/oss-swagger-editor-master/badge/icon?subject=jenkins%20build)](https://jenkins.swagger.io/view/OSS%20-%20JavaScript/job/oss-swagger-editor-master/)
 
 **🕰️ Looking for the older version of Swagger Editor?** Refer to the [*2.x* branch](https://github.com/swagger-api/swagger-editor/tree/2.x).
@@ -65,7 +63,7 @@ Script name | Description
 
 ##### Prerequisites
 
-- NPM >=6.12.x
+- NPM >=7.x
 
 Generally, we recommend the following guidelines from [Node.js Releases](https://nodejs.org/en/about/releases/) to only use Active LTS or Maintenance LTS releases.
 
@@ -75,11 +73,7 @@ Current Node.js:
 
 Current Node.js Active LTS:
 - Node.js 14.x
-- NPM >=6.12.x
-
-Current Node.js Maintenance LTS:
-- Node.js >=12.4
-- NPM >=6.12.x
+- NPM >=7.x.x
 
 
 If you have Node.js and npm installed, you can run `npm start` to spin up a static server.
@@ -113,18 +107,19 @@ docker run -d -p 80:8080 swaggerapi/swagger-editor
 
 This will run Swagger Editor (in detached mode) on port 80 on your machine, so you can open it by navigating to `http://localhost` in your browser.  
 
+* You can provide a URL pointing to an API definition (may not be available if some security policies such as CSP or CORS are enforced):
 
-* You can provide your own `json` or `yaml` definition file on your host
+```
+docker run -d -p 80:8080 -e URL="https://petstore3.swagger.io/api/v3/openapi.json" swaggerapi/swagger-editor
+```
+
+* You can provide your own `json` or `yaml` definition file from your local host:
 
 ```
 docker run -d -p 80:8080 -v $(pwd):/tmp -e SWAGGER_FILE=/tmp/swagger.json swaggerapi/swagger-editor
 ```
 
-* You can provide a API document from your local machine — for example, if you have a file at `./bar/swagger.json`:
-
-```
-docker run -d -p 80:8080 -e URL=/foo/swagger.json -v /bar:/usr/share/nginx/html/foo swaggerapi/swagger-editor
-```
+**Note:** When both `URL` and `SWAGGER_FILE` environment variables are set, `URL` has priority and `SWAGGER_FILE` is ignored.
 
 * You can specify a different base url for accessing the application - for example if you want the application to be available at `http://localhost/swagger-editor/`:
 
@@ -148,7 +143,6 @@ docker build -t swagger-editor .
 
 # Run the container
 docker run -d -p 80:8080 swagger-editor
-
 ```
 
 You can then view the app by navigating to `http://localhost` in your browser.

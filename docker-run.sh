@@ -11,8 +11,12 @@ if [[ "${BASE_URL}" != "/" ]]; then
   sed -i "s|location / {|location $BASE_URL {|g" $NGINX_CONF
 fi
 
+## Adding env var support for file passed with URL env variable
+## When set, URL has priority over SWAGGER_FILE
+if [[ "${URL}" ]]; then
+  sed -i "s|SwaggerEditorBundle({|SwaggerEditorBundle({\n      url: '${URL}',|g" $INDEX_FILE
 ## Adding env var support for swagger file (json or yaml)
-if [[ -f "$SWAGGER_FILE" ]]; then
+elif [[ -f "$SWAGGER_FILE" ]]; then
   cp -s "$SWAGGER_FILE" "$NGINX_ROOT"
   REL_PATH="/$(basename $SWAGGER_FILE)"
   sed -i "s|SwaggerEditorBundle({|SwaggerEditorBundle({\n      url: '$REL_PATH',|g" $INDEX_FILE
@@ -31,7 +35,14 @@ if [[ -f "$SWAGGER_FILE" ]]; then
   sed -i "s|#SWAGGER_ROOT|root $SWAGGER_ROOT/;|g" $NGINX_CONF
 fi
 
-# Gzip after replacements
-find /usr/share/nginx/html/ -type f -regex ".*\.\(html\|js\|css\)" -exec sh -c "gzip < {} > {}.gz" \;
+## Adding env var support for `queryConfigEnabled` core configuration parameter of SwaggerUI
+if [[ "${QUERY_CONFIG_ENABLED}" = "true" ]]; then
+  sed -i "s|queryConfigEnabled: false|queryConfigEnabled: true|" $INDEX_FILE
+fi
 
 exec nginx -g 'daemon off;'
+
+## Gzip after replacements
+#find /usr/share/nginx/html/ -type f -regex ".*\.\(html\|js\|css\)" -exec sh -c "gzip < {} > {}.gz" \;
+#
+#exec nginx -g 'daemon off;'
